@@ -1,9 +1,15 @@
 const puppeteer = require('puppeteer');
-const fs = require('fs');
 
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
+
+  // 브라우저 뷰포트 크기 설정
+  await page.setViewport({
+    width: 300,
+    height: 400,
+    deviceScaleFactor: 2,
+  });
 
   // HTML 코드 로드
   const htmlContent = `
@@ -11,6 +17,15 @@ const fs = require('fs');
     <html>
     <head>
         <style>
+            body {
+                margin: 0;
+                padding: 0;
+                background: #ffffff;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
             .widget {
                 width: 200px;
                 background: #fff5f7;
@@ -36,8 +51,9 @@ const fs = require('fs');
 
   await page.setContent(htmlContent);
 
-  // 이미지 생성
-  await page.screenshot({ path: 'widget.png', fullPage: true });
+  // 특정 요소만 캡처
+  const element = await page.$('.widget');
+  await element.screenshot({ path: 'widget.png' });
 
   console.log('Widget image saved as widget.png');
   await browser.close();
